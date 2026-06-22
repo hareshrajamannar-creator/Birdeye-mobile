@@ -127,4 +127,22 @@ export const mockPosts: Post[] = [
       'This weekend only — 20% off everything in store. Bring a friend and save even more!',
     mediaUrl: asset('seasonal-food.jpg'),
   },
+
+  // ── Extra posts to demonstrate 4–9 dot pattern (day+1) ──────────────────────
+  { id: 'd1', platform: 'instagram', status: 'scheduled',        scheduledAt: schedule(1, '08:00'), content: 'Morning motivation post.' },
+  { id: 'd2', platform: 'twitter',   status: 'scheduled',        scheduledAt: schedule(1, '09:00'), content: 'Product spotlight: check out our latest feature.' },
+  { id: 'd3', platform: 'linkedin',  status: 'pending_approval', scheduledAt: schedule(1, '11:00'), content: 'Hiring update for our engineering team.' },
+  { id: 'd4', platform: 'youtube',   status: 'scheduled',        scheduledAt: schedule(1, '14:00'), content: 'New video dropping today — watch now!' },
+  { id: 'd5', platform: 'facebook',  status: 'scheduled',        scheduledAt: schedule(1, '17:00'), content: 'Evening recap and customer spotlight.' },
+
+  // ── Extra posts to demonstrate 10+ badge (day+4) ────────────────────────────
+  { id: 'e1',  platform: 'instagram', status: 'scheduled',        scheduledAt: schedule(4, '07:00'), content: 'Pre-launch teaser #1.' },
+  { id: 'e2',  platform: 'twitter',   status: 'scheduled',        scheduledAt: schedule(4, '07:30'), content: 'Pre-launch teaser #2.' },
+  { id: 'e3',  platform: 'facebook',  status: 'scheduled',        scheduledAt: schedule(4, '08:00'), content: 'Pre-launch teaser #3.' },
+  { id: 'e4',  platform: 'linkedin',  status: 'pending_approval', scheduledAt: schedule(4, '08:30'), content: 'Pre-launch teaser #4.' },
+  { id: 'e5',  platform: 'instagram', status: 'scheduled',        scheduledAt: schedule(4, '10:00'), content: 'Pre-launch teaser #5.' },
+  { id: 'e6',  platform: 'twitter',   status: 'scheduled',        scheduledAt: schedule(4, '11:00'), content: 'Pre-launch teaser #6.' },
+  { id: 'e7',  platform: 'facebook',  status: 'scheduled',        scheduledAt: schedule(4, '12:00'), content: 'Pre-launch teaser #7.' },
+  { id: 'e8',  platform: 'youtube',   status: 'scheduled',        scheduledAt: schedule(4, '15:00'), content: 'Launch day video.' },
+  { id: 'e9',  platform: 'instagram', status: 'scheduled',        scheduledAt: schedule(4, '16:00'), content: 'Behind-the-scenes launch day.' },
 ];
