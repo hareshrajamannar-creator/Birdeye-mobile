@@ -1,6 +1,6 @@
 export type Platform = 'twitter' | 'facebook' | 'instagram' | 'linkedin' | 'youtube';
 export type PostStatus = 'published' | 'scheduled' | 'post_expired' | 'pending_approval' | 'rejected' | 'draft';
-export type ViewMode = 'list' | 'month';
+export type ViewMode = 'list' | 'week' | 'month';
 
 export interface Post {
   id: string;

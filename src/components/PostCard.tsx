@@ -40,7 +40,7 @@ export default function PostCard({ post }: Props) {
 
       {/* Row 3: media preview if any */}
       {post.mediaUrl ? (
-        <div style={{ borderRadius:Radius.md, overflow:'hidden', height:100, background:Colors.background, display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <div style={{ position:'relative', borderRadius:Radius.md, overflow:'hidden', height:100, background:Colors.background, display:'flex', alignItems:'center', justifyContent:'center' }}>
           <img src={post.mediaUrl} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} onError={e => { (e.target as HTMLImageElement).style.display='none'; }} />
           {post.mediaCount && post.mediaCount > 1 && (
             <div style={{ position:'absolute', bottom:6, right:6, background:'rgba(0,0,0,0.55)', borderRadius:Radius.sm, padding:'2px 6px', display:'flex', alignItems:'center', gap:3 }}>

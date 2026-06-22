@@ -49,7 +49,7 @@ export interface DayGroup {
   posts: Post[];
 }
 
-export type ViewMode = 'list' | 'month';
+export type ViewMode = 'list' | 'week' | 'month';
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
 

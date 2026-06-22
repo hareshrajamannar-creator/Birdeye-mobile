@@ -40,11 +40,11 @@ export default function PhoneMockup({ children }: PhoneMockupProps) {
   useEffect(() => {
     const calc = () => {
       const s = Math.min(
-        (window.innerWidth - 80) / PHONE_W,
-        (window.innerHeight - 64) / PHONE_H,
-        1.05
+        (window.innerWidth - 64) / PHONE_W,
+        (window.innerHeight - 96) / PHONE_H,
+        1
       );
-      setScale(Math.max(s, 0.45));
+      setScale(Math.max(s, 0.3));
     };
     calc();
     window.addEventListener('resize', calc);
@@ -52,9 +52,10 @@ export default function PhoneMockup({ children }: PhoneMockupProps) {
   }, []);
 
   return (
+    <div style={{ width: PHONE_W * scale, height: PHONE_H * scale, flexShrink: 0 }}>
     <div style={{
       transform: `scale(${scale})`,
-      transformOrigin: 'center center',
+      transformOrigin: 'top left',
       width: PHONE_W,
       height: PHONE_H,
       borderRadius: 55,
@@ -62,8 +63,8 @@ export default function PhoneMockup({ children }: PhoneMockupProps) {
       padding: 10,
       position: 'relative',
       boxShadow: `
-        0 60px 130px rgba(0,0,0,0.55),
-        0 20px 50px rgba(0,0,0,0.3),
+        0 28px 64px rgba(18, 28, 45, 0.22),
+        0 8px 24px rgba(18, 28, 45, 0.16),
         inset 0 0 0 0.5px rgba(255,255,255,0.12),
         inset 0 1px 0 rgba(255,255,255,0.06)
       `,
@@ -119,10 +120,11 @@ export default function PhoneMockup({ children }: PhoneMockupProps) {
         </div>
 
         {/* App content */}
-        <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+        <div style={{ flex: 1, overflow: 'visible', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           {children}
         </div>
       </div>
+    </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { MdChevronLeft, MdChevronRight, MdCalendarToday } from 'react-icons/md';
 import dayjs from 'dayjs';
 import { Colors, FontSize, Spacing, Radius } from '../tokens';
 import { getCalendarDays, toDateKey } from '../utils/dateUtils';
@@ -36,6 +36,7 @@ export default function CalendarMonthView({ posts }: Props) {
   const calDays = useMemo(() => getCalendarDays(year, month), [year, month]);
   const selectedPosts = postsByDay.get(selectedKey) ?? [];
   const monthLabel = dayjs().year(year).month(month).format('MMMM YYYY');
+  const selectedDateLabel = dayjs(selectedKey).format('dddd, MMMM D');
 
   const prev = () => {
     if (month === 0) { setMonth(11); setYear(y => y - 1); }
@@ -102,7 +103,18 @@ export default function CalendarMonthView({ posts }: Props) {
       </div>
 
       {/* Selected day posts */}
-      <div style={{ flex:1, overflowY:'auto', padding:`${Spacing.sm}px ${Spacing.base}px ${Spacing.xxl}px` }}>
+      <div style={{ flex:1, overflowY:'auto', padding:`${Spacing.md}px ${Spacing.base}px ${Spacing.xxl}px` }}>
+        <div style={{ display:'flex', alignItems:'center', gap:Spacing.sm, marginBottom:Spacing.sm }}>
+          <div style={{ width:28, height:28, borderRadius:Radius.md, background:Colors.primaryLight, display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <MdCalendarToday size={15} color={Colors.primary} />
+          </div>
+          <div style={{ display:'flex', flexDirection:'column', flex:1 }}>
+            <span style={{ fontSize:FontSize.base, fontWeight:600, color:Colors.textPrimary }}>{selectedDateLabel}</span>
+            <span style={{ fontSize:FontSize.xs, color:Colors.textSecondary }}>
+              {selectedPosts.length} scheduled post{selectedPosts.length === 1 ? '' : 's'}
+            </span>
+          </div>
+        </div>
         {selectedPosts.length === 0
           ? <EmptyState message="No posts on this day" />
           : selectedPosts.map(p => <PostCard key={p.id} post={p} />)

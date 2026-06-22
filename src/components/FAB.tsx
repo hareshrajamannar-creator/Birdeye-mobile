@@ -4,7 +4,7 @@ import { Colors } from '../tokens';
 export default function FAB() {
   return (
     <button style={{
-      position:'absolute', bottom:24, right:20,
+      position:'absolute', bottom:100, right:20,
       width:52, height:52, borderRadius:26,
       background: Colors.primary,
       border:'none', cursor:'pointer',
