@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+.expo/
+coverage/
+*.log
+*.lock
+*.map
+.env*
+web-build/
+__pycache__/
+.DS_Store
