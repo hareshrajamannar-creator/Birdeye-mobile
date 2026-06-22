@@ -5,10 +5,17 @@ import PlatformIcon from './PlatformIcon';
 import StatusChip from './StatusChip';
 import type { Post } from '../types';
 
-interface Props { post: Post }
+interface Props {
+  post: Post;
+  onPress?: (post: Post) => void;
+}
 
-export default function PostCard({ post }: Props) {
+export default function PostCard({ post, onPress }: Props) {
   return (
+    <div
+      onClick={() => onPress?.(post)}
+      style={{ cursor: onPress ? 'pointer' : 'default' }}
+    >
     <div style={{
       background: Colors.white,
       borderRadius: Radius.lg,
@@ -50,6 +57,7 @@ export default function PostCard({ post }: Props) {
           )}
         </div>
       ) : null}
+    </div>
     </div>
   );
 }
