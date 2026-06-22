@@ -127,4 +127,45 @@ export const mockPosts: Post[] = [
       'This weekend only — 20% off everything in store. Bring a friend and save even more!',
     mediaUrl: asset('seasonal-food.jpg'),
   },
+
+  // ── Additional posts to populate the week view ─────────────────────────────
+
+  // Today
+  { id: 'w1',  platform: 'instagram', status: 'published',        scheduledAt: schedule(0, '07:00'), publishedAt: schedule(0, '07:00'), content: 'Good morning! Start your day with us.', mediaUrl: asset('fashion.jpg') },
+  { id: 'w2',  platform: 'linkedin',  status: 'published',        scheduledAt: schedule(0, '08:30'), publishedAt: schedule(0, '08:30'), content: 'New partnership announcement — we are thrilled!' },
+  { id: 'w3',  platform: 'youtube',   status: 'scheduled',        scheduledAt: schedule(0, '14:00'), content: 'Watch our latest product demo video — link in bio.' },
+  { id: 'w4',  platform: 'instagram', status: 'pending_approval', scheduledAt: schedule(0, '18:00'), content: 'Evening giveaway! Tag a friend to win.', mediaUrl: asset('fashion.jpg') },
+
+  // Day +1
+  { id: 'w5',  platform: 'facebook',  status: 'scheduled',        scheduledAt: schedule(1, '08:00'), content: 'Flash sale starts at 9 AM. Do not miss out!', mediaUrl: asset('seasonal-food.jpg') },
+  { id: 'w6',  platform: 'twitter',   status: 'scheduled',        scheduledAt: schedule(1, '10:30'), content: 'Customer spotlight — read how @user transformed their workflow.' },
+  { id: 'w7',  platform: 'instagram', status: 'scheduled',        scheduledAt: schedule(1, '13:00'), content: 'Behind the scenes of our new campaign shoot.', mediaUrl: asset('fashion.jpg') },
+  { id: 'w8',  platform: 'linkedin',  status: 'pending_approval', scheduledAt: schedule(1, '16:00'), content: 'We are expanding to 3 new cities this quarter.' },
+  { id: 'w9',  platform: 'facebook',  status: 'scheduled',        scheduledAt: schedule(1, '19:30'), content: 'Week-end recap — highlights from our community.', mediaUrl: asset('hotel.jpg') },
+
+  // Day +2
+  { id: 'w10', platform: 'twitter',   status: 'scheduled',        scheduledAt: schedule(2, '09:00'), content: 'Tip Tuesday: 5 ways to boost your online presence.' },
+  { id: 'w11', platform: 'instagram', status: 'scheduled',        scheduledAt: schedule(2, '11:30'), content: 'User-generated content feature — meet our community!', mediaUrl: asset('seasonal-food.jpg') },
+  { id: 'w12', platform: 'youtube',   status: 'scheduled',        scheduledAt: schedule(2, '15:00'), content: 'Tutorial: getting started with our mobile app.' },
+
+  // Day +3
+  { id: 'w13', platform: 'facebook',  status: 'scheduled',        scheduledAt: schedule(3, '08:00'), content: 'Happy Wednesday! Midweek motivation from our team.', mediaUrl: asset('hotel.jpg') },
+  { id: 'w14', platform: 'twitter',   status: 'scheduled',        scheduledAt: schedule(3, '10:00'), content: 'We just hit 50k customers — thank you!' },
+  { id: 'w15', platform: 'linkedin',  status: 'scheduled',        scheduledAt: schedule(3, '14:00'), content: 'Webinar recap: future of social media marketing.' },
+  { id: 'w16', platform: 'instagram', status: 'scheduled',        scheduledAt: schedule(3, '17:00'), content: 'Product of the week — swipe to explore features.', mediaUrl: asset('fashion.jpg') },
+
+  // Day +4
+  { id: 'w17', platform: 'twitter',   status: 'scheduled',        scheduledAt: schedule(4, '07:30'), content: 'Throwback to our very first post — how far we have come!' },
+  { id: 'w18', platform: 'facebook',  status: 'scheduled',        scheduledAt: schedule(4, '11:00'), content: 'New blog post: top 10 social media trends of 2026.', mediaUrl: asset('seasonal-food.jpg') },
+  { id: 'w19', platform: 'instagram', status: 'scheduled',        scheduledAt: schedule(4, '16:30'), content: 'Sunset session — our brand shoot highlights.', mediaUrl: asset('fashion.jpg') },
+
+  // Day +5
+  { id: 'w20', platform: 'linkedin',  status: 'scheduled',        scheduledAt: schedule(5, '09:00'), content: 'Friday feature: meet our Head of Product.' },
+  { id: 'w21', platform: 'twitter',   status: 'scheduled',        scheduledAt: schedule(5, '12:00'), content: 'TGIF! What are you reading this weekend? Share below.' },
+  { id: 'w22', platform: 'facebook',  status: 'scheduled',        scheduledAt: schedule(5, '15:00'), content: 'Weekend prep — shop our curated weekend essentials.', mediaUrl: asset('hotel.jpg') },
+  { id: 'w23', platform: 'instagram', status: 'scheduled',        scheduledAt: schedule(5, '19:00'), content: 'Friday evening vibes — your weekend playlist.', mediaUrl: asset('fashion.jpg') },
+
+  // Day +6
+  { id: 'w24', platform: 'instagram', status: 'scheduled',        scheduledAt: schedule(6, '10:00'), content: 'Saturday special — exclusive member discount inside.', mediaUrl: asset('seasonal-food.jpg') },
+  { id: 'w25', platform: 'facebook',  status: 'scheduled',        scheduledAt: schedule(6, '14:00'), content: 'Weekend spotlight: our top rated product this month.' },
 ];
