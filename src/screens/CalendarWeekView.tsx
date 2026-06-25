@@ -5,15 +5,7 @@ import { Colors, FontSize, Radius, Spacing } from '../tokens';
 import { toDateKey } from '../utils/dateUtils';
 import EmptyState from '../components/EmptyState';
 import PostCard from '../components/PostCard';
-import type { Platform, Post } from '../types';
-
-const PLATFORM_COLORS: Record<Platform, string> = {
-  twitter: Colors.platformX,
-  facebook: Colors.platformFacebook,
-  instagram: Colors.platformInstagram,
-  linkedin: Colors.platformLinkedIn,
-  youtube: Colors.platformYouTube,
-};
+import type { Post } from '../types';
 
 interface CalendarWeekViewProps {
   posts: Post[];
@@ -83,10 +75,10 @@ export default function CalendarWeekView({ posts }: CalendarWeekViewProps) {
               <span style={{ width:32, height:32, borderRadius:16, display:'flex', alignItems:'center', justifyContent:'center', fontSize:FontSize.sm, fontWeight:isSelected || isToday ? 700 : 400, color:isSelected ? Colors.white : isToday ? Colors.primary : Colors.textPrimary, background:isSelected ? Colors.primary : isToday ? Colors.primaryLight : 'transparent' }}>
                 {day.date()}
               </span>
-              <span style={{ minHeight:5, display:'flex', gap:2 }}>
-                {dayPosts.slice(0, 3).map((post, index) => (
-                  <span key={`${post.id}-${index}`} style={{ width:5, height:5, borderRadius:3, background:PLATFORM_COLORS[post.platform] }} />
-                ))}
+              <span style={{ minHeight: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {dayPosts.length > 0 && (
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: Colors.primary, display: 'block' }} />
+                )}
               </span>
             </button>
           );

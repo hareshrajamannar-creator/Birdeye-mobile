@@ -6,18 +6,30 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import ListView from './ListView';
 import CalendarMonthView from './CalendarMonthView';
+import EngagementsScreen from './EngagementsScreen';
 import { FAB } from '../../components';
-import { Colors, Typography, Spacing, Layout } from '../../tokens';
+import { Colors, Typography, Spacing, Layout, BorderRadius, Shadows } from '../../tokens';
 import { groupPostsByDay } from '../../utils/dateUtils';
-import { MOCK_POSTS } from '../../data/mockPosts';
+import { mockPosts as MOCK_POSTS } from '../../data/mockPosts';
 import type { ViewMode, Post } from '../../types';
 
+type FeedMode = 'posts' | 'engagements';
+
+const FEED_OPTIONS: { value: FeedMode; label: string }[] = [
+  { value: 'posts',       label: 'All posts' },
+  { value: 'engagements', label: 'All engagements' },
+];
+
 export default function SocialScreen() {
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [feedMode, setFeedMode]   = useState<FeedMode>('posts');
+  const [viewMode, setViewMode]   = useState<ViewMode>('list');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const groups = useMemo(() => groupPostsByDay(MOCK_POSTS), []);
 
@@ -33,6 +45,13 @@ export default function SocialScreen() {
     // TODO: open create post flow
   }, []);
 
+  const selectFeedMode = useCallback((mode: FeedMode) => {
+    setFeedMode(mode);
+    setDropdownOpen(false);
+  }, []);
+
+  const currentLabel = FEED_OPTIONS.find((o) => o.value === feedMode)?.label ?? 'All posts';
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
@@ -42,27 +61,38 @@ export default function SocialScreen() {
         {/* Title with dropdown */}
         <TouchableOpacity
           style={styles.titleRow}
-          accessibilityLabel="Filter posts"
+          onPress={() => setDropdownOpen(true)}
+          accessibilityLabel="Select feed type"
           accessibilityRole="button"
         >
-          <Text style={styles.title}>All posts</Text>
+          <Text style={styles.title}>{currentLabel}</Text>
           <MaterialIcons name="keyboard-arrow-down" size={20} color={Colors.textPrimary} />
         </TouchableOpacity>
 
         {/* Action icons */}
         <View style={styles.actionRow}>
-          <TouchableOpacity
-            onPress={toggleViewMode}
-            style={[styles.iconBtn, viewMode === 'month' && styles.iconBtnActive]}
-            accessibilityLabel={viewMode === 'list' ? 'Switch to calendar view' : 'Switch to list view'}
-            accessibilityRole="button"
-          >
-            <MaterialIcons
-              name={viewMode === 'list' ? 'calendar-today' : 'format-list-bulleted'}
-              size={22}
-              color={viewMode === 'month' ? Colors.primary : Colors.textPrimary}
-            />
-          </TouchableOpacity>
+          {feedMode === 'posts' ? (
+            <TouchableOpacity
+              onPress={toggleViewMode}
+              style={[styles.iconBtn, viewMode === 'month' && styles.iconBtnActive]}
+              accessibilityLabel={viewMode === 'list' ? 'Switch to calendar view' : 'Switch to list view'}
+              accessibilityRole="button"
+            >
+              <MaterialIcons
+                name={viewMode === 'list' ? 'calendar-today' : 'format-list-bulleted'}
+                size={22}
+                color={viewMode === 'month' ? Colors.primary : Colors.textPrimary}
+              />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.iconBtn}
+              accessibilityLabel="Search engagements"
+              accessibilityRole="button"
+            >
+              <MaterialIcons name="search" size={22} color={Colors.textPrimary} />
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity
             style={styles.iconBtn}
@@ -74,10 +104,14 @@ export default function SocialScreen() {
 
           <TouchableOpacity
             style={styles.iconBtn}
-            accessibilityLabel="Filters"
+            accessibilityLabel={feedMode === 'posts' ? 'Filters' : 'More options'}
             accessibilityRole="button"
           >
-            <MaterialIcons name="tune" size={22} color={Colors.textPrimary} />
+            <MaterialIcons
+              name={feedMode === 'posts' ? 'tune' : 'more-vert'}
+              size={22}
+              color={Colors.textPrimary}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -86,14 +120,52 @@ export default function SocialScreen() {
       <View style={styles.topDivider} />
 
       {/* Content */}
-      {viewMode === 'list' ? (
+      {feedMode === 'engagements' ? (
+        <EngagementsScreen />
+      ) : viewMode === 'list' ? (
         <ListView groups={groups} onPostPress={handlePostPress} />
       ) : (
         <CalendarMonthView groups={groups} onPostPress={handlePostPress} />
       )}
 
-      {/* FAB */}
-      <FAB onPress={handleFABPress} />
+      {/* FAB — only on posts view */}
+      {feedMode === 'posts' && <FAB onPress={handleFABPress} />}
+
+      {/* Feed-mode dropdown modal */}
+      <Modal
+        visible={dropdownOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setDropdownOpen(false)}
+      >
+        <Pressable style={styles.modalBackdrop} onPress={() => setDropdownOpen(false)}>
+          <View style={styles.dropdown}>
+            {FEED_OPTIONS.map((option) => (
+              <TouchableOpacity
+                key={option.value}
+                style={[
+                  styles.dropdownItem,
+                  feedMode === option.value && styles.dropdownItemActive,
+                ]}
+                onPress={() => selectFeedMode(option.value)}
+                accessibilityRole="button"
+              >
+                <Text
+                  style={[
+                    styles.dropdownItemText,
+                    feedMode === option.value && styles.dropdownItemTextActive,
+                  ]}
+                >
+                  {option.label}
+                </Text>
+                {feedMode === option.value && (
+                  <MaterialIcons name="check" size={18} color={Colors.primary} />
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -117,8 +189,8 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   title: {
-    fontSize: Typography.size.lg,
-    fontWeight: Typography.weight.bold,
+    fontSize: Typography.size.xl,
+    fontWeight: Typography.weight.medium,
     color: Colors.textPrimary,
   },
   actionRow: {
@@ -139,5 +211,40 @@ const styles = StyleSheet.create({
   topDivider: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: Colors.divider,
+  },
+
+  // Dropdown modal
+  modalBackdrop: {
+    flex: 1,
+  },
+  dropdown: {
+    position: 'absolute',
+    top: Layout.topBarHeight + 44, // below status bar + top bar
+    left: Layout.screenHorizontalPadding,
+    backgroundColor: Colors.white,
+    borderRadius: BorderRadius.md,
+    ...Shadows.sm,
+    minWidth: 200,
+    overflow: 'hidden',
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.base,
+    paddingVertical: Spacing.md,
+    gap: Spacing.sm,
+  },
+  dropdownItemActive: {
+    backgroundColor: Colors.primaryLight,
+  },
+  dropdownItemText: {
+    fontSize: Typography.size.base,
+    fontWeight: Typography.weight.regular,
+    color: Colors.textPrimary,
+  },
+  dropdownItemTextActive: {
+    fontWeight: Typography.weight.semibold,
+    color: Colors.primary,
   },
 });

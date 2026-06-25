@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { MdChevronLeft, MdChevronRight, MdCalendarToday, MdExpandLess, MdExpandMore } from 'react-icons/md';
 import dayjs from 'dayjs';
 import { Colors, FontSize, Spacing, Radius } from '../tokens';
@@ -8,57 +8,16 @@ import PostDetailSheet from '../components/PostDetailSheet';
 import EmptyState from '../components/EmptyState';
 import type { Post } from '../types';
 
-const PLATFORM_COLORS: Record<string, string> = {
-  twitter:   Colors.platformX,
-  facebook:  Colors.platformFacebook,
-  instagram: Colors.platformInstagram,
-  linkedin:  Colors.platformLinkedIn,
-  youtube:   Colors.platformYouTube,
-};
-
 const DOW = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 const ROW_H = 46; // px — height of each week row in the grid
 
-// ─── Dot indicator for a day cell ────────────────────────────────────────────
+// ─── Single blue dot — indicates day has posts ────────────────────────────────
 
-function DayDots({ posts }: { posts: Post[] }) {
-  const count = posts.length;
-  if (count === 0) return <div style={{ height: 8 }} />;
-
-  if (count <= 3) {
-    return (
-      <div style={{ display: 'flex', gap: 2, justifyContent: 'center', height: 8, alignItems: 'center' }}>
-        {posts.map((p, i) => (
-          <div key={i} style={{ width: 5, height: 5, borderRadius: 3, flexShrink: 0, background: PLATFORM_COLORS[p.platform] ?? Colors.primary }} />
-        ))}
-      </div>
-    );
-  }
-
-  if (count < 10) {
-    // 3 platform dots + "+N" overflow label
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center', height: 8 }}>
-        {posts.slice(0, 3).map((p, i) => (
-          <div key={i} style={{ width: 4, height: 4, borderRadius: 2, flexShrink: 0, background: PLATFORM_COLORS[p.platform] ?? Colors.primary }} />
-        ))}
-        <span style={{ fontSize: 7, color: Colors.textSecondary, fontWeight: 600, lineHeight: 1, marginLeft: 1 }}>
-          +{count - 3}
-        </span>
-      </div>
-    );
-  }
-
-  // 10+ posts — single compact count badge
+function DayDot({ hasPosts }: { hasPosts: boolean }) {
+  if (!hasPosts) return <div style={{ height: 8 }} />;
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 8 }}>
-      <div style={{
-        background: Colors.primary, borderRadius: Radius.full,
-        padding: '1px 4px',
-        fontSize: 7, fontWeight: 700, color: Colors.white, lineHeight: 1.3,
-      }}>
-        {count}
-      </div>
+      <div style={{ width: 5, height: 5, borderRadius: '50%', background: Colors.primary }} />
     </div>
   );
 }
@@ -100,6 +59,16 @@ export default function CalendarMonthView({ posts }: Props) {
     [weeks, selectedKey],
   );
 
+  const weekScrollRef = useRef<HTMLDivElement>(null);
+
+  // When collapsing, scroll the horizontal strip to the selected week
+  useEffect(() => {
+    if (collapsed && weekScrollRef.current) {
+      const el = weekScrollRef.current;
+      el.scrollTo({ left: selectedWeekIndex * el.offsetWidth, behavior: 'smooth' });
+    }
+  }, [collapsed, selectedWeekIndex]);
+
   const selectedPosts    = postsByDay.get(selectedKey) ?? [];
   const monthLabel       = dayjs().year(year).month(month).format('MMMM YYYY');
   const selectedDateLabel = dayjs(selectedKey).format('dddd, MMMM D');
@@ -120,8 +89,7 @@ export default function CalendarMonthView({ posts }: Props) {
     if (top < 4  && collapsed)  setCollapsed(false);
   }, [collapsed]);
 
-  const gridHeight        = collapsed ? ROW_H : weeks.length * ROW_H;
-  const gridTranslateY    = collapsed ? -(selectedWeekIndex * ROW_H) : 0;
+  const gridHeight = weeks.length * ROW_H;
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: Colors.background }}>
@@ -164,21 +132,35 @@ export default function CalendarMonthView({ posts }: Props) {
         ))}
       </div>
 
-      {/* ── Calendar grid (animated height + translateY) ── */}
-      <div style={{
-        background: Colors.white,
-        overflow: 'hidden',
-        flexShrink: 0,
-        height: gridHeight,
-        transition: 'height 0.28s cubic-bezier(0.4, 0, 0.2, 1)',
-        borderBottom: `1px solid ${Colors.divider}`,
-      }}>
-        <div style={{
-          transform: `translateY(${gridTranslateY}px)`,
-          transition: 'transform 0.28s cubic-bezier(0.4, 0, 0.2, 1)',
-        }}>
+      {/* ── Calendar grid ── */}
+      {collapsed ? (
+        /* Collapsed: horizontal scroll strip — swipe between weeks */
+        <div
+          ref={weekScrollRef}
+          style={{
+            display: 'flex',
+            overflowX: 'auto',
+            scrollSnapType: 'x mandatory',
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+            flexShrink: 0,
+            height: ROW_H,
+            background: Colors.white,
+            borderBottom: `1px solid ${Colors.divider}`,
+          } as React.CSSProperties}
+        >
           {weeks.map((week, wi) => (
-            <div key={wi} style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', height: ROW_H }}>
+            <div
+              key={wi}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(7,1fr)',
+                minWidth: '100%',
+                height: ROW_H,
+                scrollSnapAlign: 'start',
+                flexShrink: 0,
+              }}
+            >
               {week.map(cell => {
                 const dayPosts = postsByDay.get(cell.dateKey) ?? [];
                 const isSelected = cell.dateKey === selectedKey;
@@ -207,14 +189,61 @@ export default function CalendarMonthView({ posts }: Props) {
                         {cell.day}
                       </span>
                     </div>
-                    <DayDots posts={dayPosts} />
+                    <DayDot hasPosts={dayPosts.length > 0} />
                   </button>
                 );
               })}
             </div>
           ))}
         </div>
-      </div>
+      ) : (
+        /* Expanded: full grid with animated height */
+        <div style={{
+          background: Colors.white,
+          flexShrink: 0,
+          height: gridHeight,
+          transition: 'height 0.28s cubic-bezier(0.4, 0, 0.2, 1)',
+          borderBottom: `1px solid ${Colors.divider}`,
+          overflow: 'hidden',
+        }}>
+          {weeks.map((week, wi) => (
+            <div key={wi} style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', height: ROW_H }}>
+              {week.map(cell => {
+                const dayPosts = postsByDay.get(cell.dateKey) ?? [];
+                const isSelected = cell.dateKey === selectedKey;
+                const isActive = cell.isCurrentMonth;
+                return (
+                  <button
+                    key={cell.dateKey}
+                    onClick={() => { if (isActive) { setSelectedKey(cell.dateKey); } }}
+                    style={{
+                      border: 'none', background: 'none',
+                      cursor: isActive ? 'pointer' : 'default',
+                      display: 'flex', flexDirection: 'column', alignItems: 'center',
+                      justifyContent: 'center', gap: 2, padding: '4px 1px',
+                    }}
+                  >
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 14,
+                      background: isSelected ? Colors.primary : cell.isToday ? Colors.primaryLight : 'transparent',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <span style={{
+                        fontSize: FontSize.xs,
+                        fontWeight: cell.isToday || isSelected ? 700 : 400,
+                        color: isSelected ? Colors.white : isActive ? Colors.textPrimary : Colors.textSecondary,
+                      }}>
+                        {cell.day}
+                      </span>
+                    </div>
+                    <DayDot hasPosts={dayPosts.length > 0} />
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ── Selected day post list ── */}
       <div

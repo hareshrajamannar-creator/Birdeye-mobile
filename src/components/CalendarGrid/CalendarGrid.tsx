@@ -2,22 +2,13 @@ import React, { memo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { Colors, Typography, Spacing, BorderRadius, CalendarTokens } from '../../tokens';
 import { getCalendarDays } from '../../utils/dateUtils';
-import type { Post, Platform } from '../../types';
+import type { Post } from '../../types';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CELL_WIDTH = Math.floor(SCREEN_WIDTH / 7);
 
 const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
-const PLATFORM_DOT_COLORS: Record<Platform, string> = {
-  twitter: Colors.platformX,
-  facebook: Colors.platformFacebook,
-  instagram: Colors.platformInstagram,
-  linkedin: Colors.platformLinkedIn,
-  youtube: Colors.platformYouTube,
-  tiktok: Colors.platformTikTok,
-  pinterest: Colors.platformPinterest,
-};
 
 interface CalendarGridProps {
   year: number;
@@ -53,13 +44,7 @@ function CalendarGrid({
         {days.map((day) => {
           const posts = postsByDay.get(day.dateKey) ?? [];
           const isSelected = day.dateKey === selectedDateKey;
-          const dotPlatforms = posts
-            .slice(0, CalendarTokens.maxDotsPerDay)
-            .map((p) => p.platform);
-          const extraCount =
-            posts.length > CalendarTokens.maxDotsPerDay
-              ? posts.length - CalendarTokens.maxDotsPerDay
-              : 0;
+          const hasPosts = posts.length > 0;
 
           return (
             <TouchableOpacity
@@ -90,23 +75,8 @@ function CalendarGrid({
                 </Text>
               </View>
 
-              {/* Post indicator dots */}
-              {posts.length > 0 && (
-                <View style={styles.dotsRow}>
-                  {dotPlatforms.map((platform, i) => (
-                    <View
-                      key={`${day.dateKey}-dot-${i}`}
-                      style={[
-                        styles.dot,
-                        { backgroundColor: PLATFORM_DOT_COLORS[platform] },
-                      ]}
-                    />
-                  ))}
-                  {extraCount > 0 && (
-                    <Text style={styles.extraCount}>+{extraCount}</Text>
-                  )}
-                </View>
-              )}
+              {/* Single blue dot — indicates day has posts */}
+              {hasPosts && <View style={styles.dot} />}
             </TouchableOpacity>
           );
         })}
@@ -180,20 +150,11 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontWeight: Typography.weight.semibold,
   },
-  dotsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: CalendarTokens.dotSpacing,
-    marginTop: 2,
-  },
   dot: {
     width: CalendarTokens.dotSize,
     height: CalendarTokens.dotSize,
     borderRadius: CalendarTokens.dotSize / 2,
-  },
-  extraCount: {
-    fontSize: Typography.size.xs,
-    color: Colors.textSecondary,
-    fontWeight: Typography.weight.medium,
+    backgroundColor: Colors.primary,
+    marginTop: 3,
   },
 });

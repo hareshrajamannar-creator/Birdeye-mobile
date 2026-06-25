@@ -12,3 +12,4 @@ export { default as CalendarGrid } from './CalendarGrid/CalendarGrid';
 export { default as Divider } from './Divider/Divider';
 export { default as FAB } from './FAB/FAB';
 export { default as EmptyState } from './EmptyState/EmptyState';
+export { default as EngagementCard } from './EngagementCard/EngagementCard';

@@ -10,6 +10,9 @@ import {
   MdRefresh,
   MdOutlineTune,
   MdCalendarToday,
+  MdSearch,
+  MdFilterList,
+  MdMoreVert,
 } from 'react-icons/md';
 import { Colors, FontSize, Spacing, Radius } from '../tokens';
 import { mockPosts } from '../data/mockPosts';
@@ -17,6 +20,7 @@ import ListView, { type ListViewHandle } from './ListView';
 import CalendarMonthView from './CalendarMonthView';
 import CalendarWeekView from './CalendarWeekView';
 import FAB from '../components/FAB';
+import EngagementsScreen from './EngagementsScreen';
 import BottomNav from '../components/BottomNav';
 import PostFilterSheet from '../components/PostFilterSheet';
 import ViewModeSheet from '../components/ViewModeSheet';
@@ -63,7 +67,8 @@ export default function SocialScreen() {
     [],
   );
 
-  const showTodayBtn = view === 'list' && visibleDateKey !== TODAY_KEY;
+  const isEngagements = selectedFilter.key === 'engage:View all engagements';
+  const showTodayBtn = !isEngagements && view === 'list' && visibleDateKey !== TODAY_KEY;
 
   const handleVisibleDateChange = useCallback((dateKey: string) => {
     setVisibleDateKey(dateKey);
@@ -105,34 +110,49 @@ export default function SocialScreen() {
             onClick={() => { setIsViewSheetOpen(false); setIsFilterSheetOpen(true); }}
             style={{ border: 0, background: 'transparent', display: 'flex', alignItems: 'center', gap: Spacing.xs, padding: 0, cursor: 'pointer', color: Colors.textPrimary }}
           >
-            <span style={{ fontSize: FontSize.lg, fontWeight: 700 }}>{selectedFilter.label}</span>
+            <span style={{ fontSize: FontSize.lg, fontWeight: 700 }}>
+              {isEngagements ? 'All engagements' : selectedFilter.label}
+            </span>
             <MdKeyboardArrowDown size={20} />
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: Spacing.xs }}>
-            {/* View toggle — always highlighted blue as it shows the active view */}
-            <button
-              type="button"
-              aria-label={`Choose view, current view is ${view}`}
-              aria-expanded={isViewSheetOpen}
-              onClick={() => { setIsFilterSheetOpen(false); setIsViewSheetOpen(true); }}
-              style={{ ...iconBtn, background: Colors.primaryLight, color: Colors.primary }}
-            >
-              <ActiveViewIcon size={21} />
-            </button>
-
-            <button type="button" aria-label="Refresh posts" style={{ ...iconBtn, color: Colors.textPrimary }}>
-              <MdRefresh size={23} />
-            </button>
-
-            <button type="button" aria-label="Filter posts" style={{ ...iconBtn, color: Colors.textPrimary }}>
-              <MdOutlineTune size={22} />
-            </button>
+            {isEngagements ? (
+              <>
+                <button type="button" aria-label="Search engagements" style={{ ...iconBtn, color: Colors.textPrimary }}>
+                  <MdSearch size={23} />
+                </button>
+                <button type="button" aria-label="Filter engagements" style={{ ...iconBtn, color: Colors.textPrimary }}>
+                  <MdFilterList size={22} />
+                </button>
+                <button type="button" aria-label="More options" style={{ ...iconBtn, color: Colors.textPrimary }}>
+                  <MdMoreVert size={22} />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  aria-label={`Choose view, current view is ${view}`}
+                  aria-expanded={isViewSheetOpen}
+                  onClick={() => { setIsFilterSheetOpen(false); setIsViewSheetOpen(true); }}
+                  style={{ ...iconBtn, background: Colors.primaryLight, color: Colors.primary }}
+                >
+                  <ActiveViewIcon size={21} />
+                </button>
+                <button type="button" aria-label="Refresh posts" style={{ ...iconBtn, color: Colors.textPrimary }}>
+                  <MdRefresh size={23} />
+                </button>
+                <button type="button" aria-label="Filter posts" style={{ ...iconBtn, color: Colors.textPrimary }}>
+                  <MdOutlineTune size={22} />
+                </button>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Sticky date bar — list view only */}
-        {view === 'list' && (
+        {/* Sticky date bar — list view only, not on engagements */}
+        {!isEngagements && view === 'list' && (
           <div style={{ position: 'relative' }}>
             <button
               type="button"
@@ -238,16 +258,22 @@ export default function SocialScreen() {
       </div>
 
       {/* Content area */}
-      {view === 'list' && (
-        <ListView
-          ref={listViewRef}
-          posts={mockPosts}
-          onVisibleDateChange={handleVisibleDateChange}
-          onPostPress={setSelectedPost}
-        />
+      {selectedFilter.key === 'engage:View all engagements' ? (
+        <EngagementsScreen />
+      ) : (
+        <>
+          {view === 'list' && (
+            <ListView
+              ref={listViewRef}
+              posts={mockPosts}
+              onVisibleDateChange={handleVisibleDateChange}
+              onPostPress={setSelectedPost}
+            />
+          )}
+          {view === 'week' && <CalendarWeekView posts={mockPosts} />}
+          {view === 'month' && <CalendarMonthView posts={mockPosts} />}
+        </>
       )}
-      {view === 'week' && <CalendarWeekView posts={mockPosts} />}
-      {view === 'month' && <CalendarMonthView posts={mockPosts} />}
 
       {/* Today floater — appears above FAB when scrolled away from today */}
       {showTodayBtn && (
@@ -273,7 +299,7 @@ export default function SocialScreen() {
         </button>
       )}
 
-      <FAB />
+      {selectedFilter.key !== 'engage:View all engagements' && <FAB />}
       <BottomNav />
 
       <PostDetailSheet post={selectedPost} onClose={() => setSelectedPost(null)} />

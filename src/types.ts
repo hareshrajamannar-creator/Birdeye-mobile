@@ -19,3 +19,27 @@ export interface DayGroup {
   dayName: string;
   posts: Post[];
 }
+
+// ─── Engagements ──────────────────────────────────────────────────────────────
+
+export type EngagementCategory = 'complaint' | 'question' | 'praise' | 'other';
+export type EngagementSentiment = 'positive' | 'neutral' | 'negative';
+export type EngagementPriority = 'high' | 'medium' | 'low';
+
+export interface Engagement {
+  id: string;
+  authorName: string;
+  authorInitials: string;
+  platform: Platform;
+  /** Display string e.g. "10:40 PM • Georgia" */
+  timeLabel: string;
+  category: EngagementCategory;
+  sentiment: EngagementSentiment;
+  priority: EngagementPriority;
+  contextBusiness: string;
+  content: string;
+  thumbnailUrl?: string;
+  likeCount: number;
+  commentCount: number;
+  suggestedReply?: string;
+}
